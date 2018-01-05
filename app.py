@@ -5,10 +5,10 @@ from flask import Flask, request, render_template, session, flash, redirect, \
 from celery import Celery
 
 app = Flask(__name__)
-app.config['CELERY_BROKEN_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 
-celery = Celery(app.name, borken=app.config['CELERY_BROKEN_URL'])
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 @celery.task(bind=True)
@@ -19,7 +19,7 @@ def long_task(self):
     noun = ['solar array', 'partical reshaper', 'cosmic ray', 'orbiter', 'bit']
 
     message = ' '
-    total = random.radiant(10, 50)
+    total = random.randint(10, 50)
     for i in range(total):
         if not message or random.random() < 0.25:
             message = '{0} {1} {2}...'.format(random.choice(verb),
@@ -73,7 +73,7 @@ def taskstatus(task_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(host="0.0.0.0", port=5001, debug=False)
 
 
 
